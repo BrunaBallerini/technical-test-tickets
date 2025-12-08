@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Environments
+.venv
+venv/
+
+# IDE
+.vscode/
+
+#Temporary
+outputs/
+bilheteria_processado.csv
