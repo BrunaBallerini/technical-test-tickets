@@ -42,5 +42,4 @@ for col in colums_to_see:
     print(f"{col}: {set(data[col])}")
 print("\n")
 
-
 visualize_data(data, "data_exploration")
