@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 import unicodedata
 import re
-from visualization import visualize_data
+from visualization import correlation_heatmap
 
 # Configurar pandas para melhor visualização
 pd.set_option('display.max_columns', None)
@@ -156,3 +156,5 @@ if __name__ == "__main__":
 
     # Salva o dataset processado
     data.to_csv('data/bilheteria_processado.csv', index=False)
+
+    correlation_heatmap(data, "preprocessing")

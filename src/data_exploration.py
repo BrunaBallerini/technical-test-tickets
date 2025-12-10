@@ -1,6 +1,6 @@
 import pandas as pd
 
-from visualization import visualize_data
+from visualization import distribution_by_null_values, distribution_by_type_of_age_rating, distribution_by_type_of_event, distribution_by_type_of_session, histogram, relationship_between_ticket_price_and_quantity_sold
 
 # Configurar pandas para melhor visualização
 pd.set_option('display.max_columns', None)
@@ -42,4 +42,9 @@ for col in colums_to_see:
     print(f"{col}: {set(data[col])}")
 print("\n")
 
-visualize_data(data, "data_exploration")
+histogram(data, "data_exploration")
+distribution_by_type_of_event(data, "data_exploration")
+distribution_by_type_of_age_rating(data, "data_exploration")
+distribution_by_type_of_session(data, "data_exploration")
+distribution_by_null_values(data, "data_exploration")
+relationship_between_ticket_price_and_quantity_sold(data, "data_exploration")

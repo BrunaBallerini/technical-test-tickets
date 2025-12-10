@@ -15,10 +15,7 @@ def histogram(data, folder_name):
         None
     """
 
-    # Configurar estilo dos gráficos
     sns.set_style("whitegrid")
-
-    # Criar pasta para salvar os gráficos
     os.makedirs(f'outputs/{folder_name}', exist_ok=True)
 
     try:
@@ -42,6 +39,9 @@ def distribution_by_type_of_event(data, folder_name):
     Returns:
         None
     """
+
+    sns.set_style("whitegrid")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
 
     try:
         plt.figure(figsize=(10, 6))
@@ -68,6 +68,10 @@ def distribution_by_type_of_age_rating(data, folder_name):
     Returns:
         None
     """
+
+    sns.set_style("whitegrid")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
+
     try:
         plt.figure(figsize=(10, 6))
         classificacao_counts = data['Classificação Etária'].value_counts()
@@ -93,6 +97,10 @@ def distribution_by_type_of_session(data, folder_name):
     Returns:
         None
     """
+
+    sns.set_style("whitegrid")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
+
     try:
         plt.figure(figsize=(10, 6))
         sessao_counts = data['Tipo da Sessão'].value_counts()
@@ -117,6 +125,10 @@ def distribution_by_null_values(data, folder_name):
     Returns:
         None
     """
+
+    sns.set_style("whitegrid")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
+
     try:
         plt.figure(figsize=(10, 6))
         null_counts = data.isnull().sum()
@@ -141,6 +153,10 @@ def relationship_between_ticket_price_and_quantity_sold(data, folder_name):
     Returns:
         None 
     """
+
+    sns.set_style("whitegrid")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
+
     try:
         plt.figure(figsize=(10, 6))
         plt.scatter(data['Valor do Ingresso'], data['Quantidade de ingressos vendidos'], alpha=0.5)
@@ -164,13 +180,60 @@ def correlation_heatmap(data, folder_name):
     Returns:
         None
     """
+
+    sns.set_style("white")
+    os.makedirs(f'outputs/{folder_name}', exist_ok=True)
+
     try:
-        plt.figure(figsize=(20, 10))
-        sns.heatmap(data.corr(method='spearman', numeric_only=True), cmap='Greens', annot=True)
-        plt.title('Matriz de Correlação', fontsize=16)
+        corr_matrix = data.corr(method='spearman', numeric_only=True)
+        fig, ax = plt.subplots(figsize=(24, 20))
+        sns.heatmap(
+            corr_matrix, 
+            cmap='RdYlGn',  # Colormap com melhor contraste (vermelho-amarelo-verde)
+            center=0,  # Centralizar o colormap no zero
+            annot=False,  # Remover anotações numéricas
+            fmt='.2f',
+            square=True,  # Células quadradas
+            linewidths=0.5,  # Linhas entre células
+            linecolor='white',
+            cbar_kws={
+                'shrink': 0.8,
+                'label': 'Correlação de Spearman',
+                'orientation': 'vertical'
+            },
+            ax=ax
+        )
+        
+        # Configurar título
+        plt.title('Matriz de Correlação', fontsize=20, pad=20, fontweight='bold')
+        
+        # Configurar labels do eixo X
+        ax.set_xticklabels(
+            ax.get_xticklabels(),
+            rotation=45,
+            ha='right',
+            fontsize=8,
+            rotation_mode='anchor'
+        )
+        
+        # Configurar labels do eixo Y
+        ax.set_yticklabels(
+            ax.get_yticklabels(),
+            rotation=0,
+            fontsize=8
+        )
+        
+        # Ajustar layout
         plt.tight_layout()
-        plt.savefig(f'outputs/{folder_name}/07_heatmap_correlacao.png')
+        
+        # Salvar com alta resolução
+        plt.savefig(
+            f'outputs/{folder_name}/07_heatmap_correlacao.png',
+            dpi=300,
+            bbox_inches='tight'
+        )
         plt.close()
+        
     except Exception as e:
         print(f"Erro ao gerar heatmap de correlação: {e}")
 
