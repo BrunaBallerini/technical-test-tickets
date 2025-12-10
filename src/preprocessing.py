@@ -56,6 +56,22 @@ def extract_day_of_week(data):
 
     return data
 
+def get_hour_of_session(data):
+    """
+    Função que extrai a hora da sessão
+    Extrai apenas a hora (0-23) da coluna 'Data da Sessão'
+    
+    Args:
+        data: DataFrame com a coluna 'Data da Sessão'
+
+    Returns:
+        DataFrame com a coluna 'Hora'
+    """
+    temp_dates = pd.to_datetime(data['Data da Sessão'], format='%d/%m/%Y - %H:%M', errors='coerce')
+    data['Hora'] = temp_dates.dt.hour
+
+    return data
+
 
 def extract_day_of_month(data):
     """
@@ -125,15 +141,21 @@ if __name__ == "__main__":
 
     data = pd.read_csv('data/bilheteria.csv', sep=';', skiprows=1)
 
+    # Remover a coluna Total de Vendas para evitar overfitting
+    if 'Total de Vendas' in data.columns:
+        data = data.drop(columns=['Total de Vendas'])
+
     # Remover a última coluna se ela estiver completamente vazia
     if data.iloc[:, -1].isnull().all():
         data = data.iloc[:, :-1]
 
-    # Remover todas as linhas que contêm algum valor nulo
-    data = data.dropna()
+    # Preencher o valor do ingresso vazio com 0 assumindo como gratuito
+    data['Valor do Ingresso'] = data['Valor do Ingresso'].fillna(0)
+    
+    # Remover todas as linhas que contêm algum valor nulo na coluna 'Quantidade de ingressos vendidos'
+    data = data.dropna(subset=['Quantidade de ingressos vendidos'])
 
-    # Remover coluna Total de Vendas para evitar overfitting
-    data = data.drop(columns=['Total de Vendas'])
+    data = get_hour_of_session(data)
 
     data = extract_day_of_week(data)
     
@@ -145,9 +167,9 @@ if __name__ == "__main__":
     if 'Dia da Semana' in data.columns:
         data = data.drop(columns=['Data da Sessão'])
 
-    # Separa as colunas categóricas das numéricas
-    colunas_categoricas = ['Espaço', 'Evento', 'Tipo de Evento', 'Classificação Etária', 'Tipo da Sessão']
-    colunas_numericas = [col for col in data.columns if col not in colunas_categoricas]
+    # Separa as colunas categóricas das numéricas para aplicar One-Hot Encoding
+    colunas_categoricas = ['Espaço', 'Tipo de Evento', 'Classificação Etária', 'Tipo da Sessão']
+    colunas_numericas = [col for col in data.columns if col not in colunas_categoricas and col != 'Evento']
 
     data = one_hot_encoding(data, colunas_categoricas, colunas_numericas)
 
