@@ -145,9 +145,6 @@ if __name__ == "__main__":
     if 'Dia da Semana' in data.columns:
         data = data.drop(columns=['Data da Sessão'])
 
-    print(data.head())
-    print(data.columns)
-
     # Separa as colunas categóricas das numéricas
     colunas_categoricas = ['Espaço', 'Evento', 'Tipo de Evento', 'Classificação Etária', 'Tipo da Sessão']
     colunas_numericas = [col for col in data.columns if col not in colunas_categoricas]

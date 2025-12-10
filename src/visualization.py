@@ -3,7 +3,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-def visualize_data(data, folder_name):
+def histogram(data, folder_name):
+    """
+    Função que gera histogramas das variáveis numéricas
+    
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
 
     # Configurar estilo dos gráficos
     sns.set_style("whitegrid")
@@ -12,7 +22,6 @@ def visualize_data(data, folder_name):
     os.makedirs(f'outputs/{folder_name}', exist_ok=True)
 
     try:
-        # Histograma de todas as variáveis numéricas
         data.hist(bins=50, figsize=(15, 8))
         plt.suptitle('Histogramas das Variáveis Numéricas', fontsize=16, y=1.00)
         plt.tight_layout()
@@ -21,8 +30,20 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar histogramas: {e}")
 
+
+def distribution_by_type_of_event(data, folder_name):
+    """
+    Função que gera distribuição por tipo de evento
+    
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
+
     try:
-        # Distribuição por Tipo de Evento
         plt.figure(figsize=(10, 6))
         tipo_evento_counts = data['Tipo de Evento'].value_counts()
         plt.bar(range(len(tipo_evento_counts)), tipo_evento_counts.values, color='steelblue')
@@ -35,8 +56,19 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar distribuição por tipo de evento: {e}")
 
+
+def distribution_by_type_of_age_rating(data, folder_name):
+    """
+    Função que gera distribuição por classificação etária
+    
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
     try:
-        # Distribuição por Classificação Etária
         plt.figure(figsize=(10, 6))
         classificacao_counts = data['Classificação Etária'].value_counts()
         plt.bar(range(len(classificacao_counts)), classificacao_counts.values, color='coral')
@@ -49,8 +81,19 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar distribuição por classificação etária: {e}")
 
+
+def distribution_by_type_of_session(data, folder_name):
+    """
+    Função que gera distribuição por tipo de sessão
+    
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
     try:
-        # Distribuição por Tipo de Sessão
         plt.figure(figsize=(10, 6))
         sessao_counts = data['Tipo da Sessão'].value_counts()
         plt.bar(range(len(sessao_counts)), sessao_counts.values, color='mediumseagreen')
@@ -63,8 +106,18 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar distribuição por tipo de sessão: {e}")
 
+
+def distribution_by_null_values(data, folder_name):
+    """
+    Função que gera distribuição por valores nulos
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
     try:
-        # Distribuição por valores nulos
         plt.figure(figsize=(10, 6))
         null_counts = data.isnull().sum()
         plt.bar(range(len(null_counts)), null_counts.values, color='red')   
@@ -77,8 +130,18 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar distribuição por valores nulos: {e}")
 
+
+def relationship_between_ticket_price_and_quantity_sold(data, folder_name):
+    """
+    Função que gera relação entre valor do ingresso e quantidade vendida
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None 
+    """
     try:
-        # Relação entre Valor do Ingresso e Quantidade Vendida
         plt.figure(figsize=(10, 6))
         plt.scatter(data['Valor do Ingresso'], data['Quantidade de ingressos vendidos'], alpha=0.5)
         plt.title("Relação entre Valor do Ingresso e Quantidade Vendida")
@@ -90,8 +153,18 @@ def visualize_data(data, folder_name):
     except Exception as e:
         print(f"Erro ao gerar relação entre valor do ingresso e quantidade vendida: {e}")
 
+
+def correlation_heatmap(data, folder_name):
+    """
+    Função que gera heatmap de correlação
+    Args:
+        data: DataFrame com as variáveis numéricas
+        folder_name: Nome da pasta para salvar os gráficos
+
+    Returns:
+        None
+    """
     try:
-        # Heatmap de Correlação (Spearman)
         plt.figure(figsize=(20, 10))
         sns.heatmap(data.corr(method='spearman', numeric_only=True), cmap='Greens', annot=True)
         plt.title('Matriz de Correlação', fontsize=16)
