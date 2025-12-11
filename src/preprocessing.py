@@ -2,12 +2,11 @@ import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 import unicodedata
 import re
-from visualization import correlation_heatmap
 
-# Configurar pandas para melhor visualização
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-pd.set_option('display.max_colwidth', 50)
+try:
+    from .visualization import correlation_heatmap
+except ImportError:
+    from visualization import correlation_heatmap
 
 def normalize_column_names(df):
     """
@@ -137,46 +136,80 @@ def one_hot_encoding(data, categorical_columns, numerical_columns):
 
     return data
 
+
+def preprocessing(data_path):
+    """
+    Função que processa o dataset
+    Primeiro, remove a coluna Total de Vendas para evitar overfitting
+    Depois remove a última coluna se ela estiver completamente vazia
+    Depois preenche o valor do ingresso vazio com 0 assumindo como gratuito
+    Depois remove todas as linhas que contêm algum valor nulo na coluna 'Quantidade de ingressos vendidos'
+    Depois extrai a hora da sessão
+    Depois extrai o dia da semana
+    Depois extrai o dia do mês
+    Salva o dataset processado
+
+    Args:
+        data_path: Caminho do dataset
+
+    Returns:
+        None
+    """
+    # Configurar pandas para melhor visualização
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', 50)
+
+    try:
+        data = pd.read_csv(data_path, sep=';', skiprows=1)
+
+        if 'Total de Vendas' in data.columns:
+            data = data.drop(columns=['Total de Vendas'])
+
+        if data.iloc[:, -1].isnull().all():
+            data = data.iloc[:, :-1]
+
+        data['Valor do Ingresso'] = data['Valor do Ingresso'].fillna(0)
+
+        data = data.dropna(subset=['Quantidade de ingressos vendidos'])
+
+        data = get_hour_of_session(data)
+
+        data = extract_day_of_week(data)
+        
+        data = extract_day_of_month(data)
+        
+        data = calculate_days_in_theaters(data)
+
+        # Garante que função extract_day_of_week já foi aplicada e remove a coluna 'Data da Sessão'
+        if 'Dia da Semana' in data.columns:
+            data = data.drop(columns=['Data da Sessão'])
+
+        # Separa as colunas categóricas das numéricas para aplicar One-Hot Encoding
+        colunas_categoricas = ['Espaço', 'Tipo de Evento', 'Classificação Etária', 'Tipo da Sessão']
+        colunas_numericas = [col for col in data.columns if col not in colunas_categoricas and col != 'Evento']
+
+        data = one_hot_encoding(data, colunas_categoricas, colunas_numericas)
+
+        # Normaliza nomes das colunas
+        data = normalize_column_names(data)
+
+        print("\nDataset processado com sucesso!")
+
+        correlation_heatmap(data, "preprocessing")
+        print("\nHeatmap de correlação gerado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao processar o dataset: {e}")
+        return None
+
+    try:
+        data.to_csv('data/bilheteria_processado.csv', index=False)
+        print("\nDataset processado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao salvar o dataset processado: {e}")
+        return None
+
+
 if __name__ == "__main__":
-
-    data = pd.read_csv('data/bilheteria.csv', sep=';', skiprows=1)
-
-    # Remover a coluna Total de Vendas para evitar overfitting
-    if 'Total de Vendas' in data.columns:
-        data = data.drop(columns=['Total de Vendas'])
-
-    # Remover a última coluna se ela estiver completamente vazia
-    if data.iloc[:, -1].isnull().all():
-        data = data.iloc[:, :-1]
-
-    # Preencher o valor do ingresso vazio com 0 assumindo como gratuito
-    data['Valor do Ingresso'] = data['Valor do Ingresso'].fillna(0)
-    
-    # Remover todas as linhas que contêm algum valor nulo na coluna 'Quantidade de ingressos vendidos'
-    data = data.dropna(subset=['Quantidade de ingressos vendidos'])
-
-    data = get_hour_of_session(data)
-
-    data = extract_day_of_week(data)
-    
-    data = extract_day_of_month(data)
-    
-    data = calculate_days_in_theaters(data)
-
-    # Garante que função extract_day_of_week já foi aplicada e remove a coluna 'Data da Sessão'
-    if 'Dia da Semana' in data.columns:
-        data = data.drop(columns=['Data da Sessão'])
-
-    # Separa as colunas categóricas das numéricas para aplicar One-Hot Encoding
-    colunas_categoricas = ['Espaço', 'Tipo de Evento', 'Classificação Etária', 'Tipo da Sessão']
-    colunas_numericas = [col for col in data.columns if col not in colunas_categoricas and col != 'Evento']
-
-    data = one_hot_encoding(data, colunas_categoricas, colunas_numericas)
-
-    # Normaliza nomes das colunas
-    data = normalize_column_names(data)
-
-    # Salva o dataset processado
-    data.to_csv('data/bilheteria_processado.csv', index=False)
-
-    correlation_heatmap(data, "preprocessing")
+    data_path = "data/bilheteria.csv"
+    preprocessing(data_path)
