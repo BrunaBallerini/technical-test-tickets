@@ -7,7 +7,3 @@ venv/
 
 # IDE
 .vscode/
-
-#Temporary
-outputs/
-bilheteria_processado.csv
