@@ -190,11 +190,11 @@ def correlation_heatmap(data, folder_name):
         sns.heatmap(
             corr_matrix, 
             cmap='RdYlGn',  # Colormap com melhor contraste (vermelho-amarelo-verde)
-            center=0,  # Centralizar o colormap no zero
-            annot=False,  # Remover anotações numéricas
+            center=0,       # Centralizar o colormap no zero
+            annot=False,    # Remover anotações numéricas
             fmt='.2f',
-            square=True,  # Células quadradas
-            linewidths=0.5,  # Linhas entre células
+            square=True,    # Células quadradas
+            linewidths=0.5, # Linhas entre células
             linecolor='white',
             cbar_kws={
                 'shrink': 0.8,

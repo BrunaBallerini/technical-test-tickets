@@ -1,9 +1,8 @@
 # Análise de Bilheteria FUNARTE
 
-## Problema: Prever vendas de ingressos
+## Problema 1: Prever vendas de ingressos
 
 ## data_exploration.py
-
 - **Dataset original:** 538 registros com 12 colunas
 - **Valores nulos identificados:** Múltiplas colunas apresentavam valores ausentes
 - **Primeira linha:** Continha metadados e foi removida (`skiprows=1`)
@@ -13,11 +12,9 @@
 - **Classificação Etária:** Livre, Adulto e Infantil
 - **Tipos de Sessão:** Aberta e Fechada
 - **Espaços:** Múltiplos espaços culturais da FUNARTE em RJ, SP e MG
-- Variáveis categóricas que requerem aplicar tecnica OneHotEncoder
-- Relação entre valor do ingresso e quantidade vendida apresenta dispersão
-- Distribuição não uniforme entre tipos de eventos
+- **Insights:**Variáveis categóricas que requerem aplicar tecnica OneHotEncoder
 
-### Visualizações Geradas
+### visualization.py
 - **01_histogramas.png** - Distribuição de todas as variáveis numéricas
 - **02_tipo_evento.png** - Distribuição por tipo de evento
 - **03_classificacao_etaria.png** - Distribuição por classificação etária
@@ -27,47 +24,25 @@
 - **07_heatmap_correlacao.png** - Matriz de correlação (Spearman)
 
 ## preprocessing.py
-
 - Remoção da primeira linha (metadados)
 - Remoção da última coluna vazia
-- Remoção de todas as linhas com valores nulos
-**Justificativa:** Valores nulos e zerados podem comprometer a qualidade dos modelos de machine learning. A remoção foi preferida à imputação devido à natureza dos dados de bilheteria, onde valores ausentes podem indicar sessões não realizadas ou dados não coletados.
-
+- Preencher o valor do ingresso vazio com 0 assumindo como gratuito
+**Justificativa:** Anteriormente foi retirados todas as linhas com dados nulos, mas a quantidade de dados foi muito reduzida e não foi considerado os ingressos com valores nulos sendo.
+- Remoção de todas as linhas com valores nulos da coluna quantidade de ingressos vendidos
+**Justificativa:** Valores nulos e zerados podem comprometer a qualidade dos modelos de machine learning e a remoção foi escolhida para não tendencionar o modelo.
 - Normalização de Nomes de Colunas
 **Justificativa:** Padronização evitando erros com caracteres especiais.
-
-- One-Hot Encoding nos dados categóricos
-**Justificativa:** Variáveis categóricas não podem ser diretamente utilizadas em modelos de machine learning. O One-Hot Encoding transforma cada categoria em uma coluna binária, preservando a informação sem criar relações ordinais artificiais.
-
+- One-Hot Encoding nos dados categóricos menos da coluna Evento
+**Justificativa:** Variáveis categóricas não podem ser diretamente utilizadas em modelos de machine learning. O One-Hot Encoding transforma cada categoria em uma coluna binária, preservando a informação sem criar relações ordinais artificiais. Primeiramente a coluna evento também passou pelo processo, mas aumento muito os dados e não trouxe informações pertinentes para o modelo.
+- Remoção da coluna "Total de Vendas"
+**Justificativa:** Como a coluan total de vendas é calculado comocom valor do ingresso × quantidade vendida, criando vazamento de informação que pode inflar artificialmente a performance do modelo.
+- Extrair dia da semana das datas das sessões, deixando horário e dia do mês
+- Cálculo do tempo que os eventos estão em cartaz
+**Justificativa:** Padrões temporais podem revelar comportamentos de público, além de duração do evento pode trazer informações de sucesso do evento.
 - Dataset Processado salvo
 
-## Próximos Passos (To-Do)
-
-### Feature Engineering - Datas
-- Extrair dia da semana das datas das sessões
-- Criar features de sazonalidade (mês, semana do mês)
-- Identificar finais de semana vs dias úteis
-**Justificativa:** Padrões temporais podem revelar comportamentos de público (ex: maior público em finais de semana).
-
-### Feature Engineering - Duração do Cartaz
-- Calcular tempo de cartaz (data fim - data início)
-- Analisar relação entre tempo de cartaz e vendas
-- Identificar eventos de curta vs longa duração
-**Justificativa:** A duração do evento pode influenciar estratégias de marketing e vendas.
-
-### Tratamento de Data Leakage
-- Avaliar remoção da coluna "Total de Vendas"
-- Verificar se há outras variáveis derivadas
-**Justificativa:** "Total de Vendas" é calculado como `Valor do Ingresso × Quantidade Vendida`, criando vazamento de informação que pode inflar artificialmente a performance do modelo.
-
-### Modelagem
-- Criar modelo baseline (ex: regressão linear)
-- Implementar modelo mais complexo (ex: Random Forest, XGBoost)
-- Validação cruzada temporal
-- Análise de feature importance
-
-### Análise Avançada
-- Clustering de eventos similares
-- Análise de séries temporais
-- Identificação de eventos de "alto sucesso"
-- Recomendações para otimização de bilheteria
+## modeling.py
+- Modelo baseline de regressão linear
+- Teste com modelos mais complexos: Random Forest e XGBoost
+- Implantação da tecnica de validação cruzada
+- Análise das features mais importantes por modelo
